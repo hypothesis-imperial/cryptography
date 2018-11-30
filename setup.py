@@ -58,12 +58,12 @@ test_requirements = [
     "pretend",
     "iso8601",
     "pytz",
-    "hypothesis>=1.11.4,!=3.79.2",
 ]
 
 
 # If there's no vectors locally that probably means we are in a tarball and
 # need to go and get the matching vectors package from PyPi
+
 if not os.path.exists(os.path.join(base_dir, "vectors/setup.py")):
     test_requirements.append(VECTORS_DEPENDENCY)
 
@@ -76,6 +76,7 @@ class PyTest(test):
 
         # This means there's a vectors/ folder with the package in here.
         # cd into it, install the vectors package and then refresh sys.path
+
         if VECTORS_DEPENDENCY not in test_requirements:
             subprocess.check_call(
                 [sys.executable, "setup.py", "install"], cwd="vectors"
@@ -152,33 +153,40 @@ def keywords_with_side_effects(argv):
 
     def is_short_option(argument):
         """Check whether a command line argument is a short option."""
+
         return len(argument) >= 2 and argument[0] == '-' and argument[1] != '-'
 
     def expand_short_options(argument):
         """Expand combined short options into canonical short options."""
+
         return ('-' + char for char in argument[1:])
 
     def argument_without_setup_requirements(argv, i):
         """Check whether a command line argument needs setup requirements."""
+
         if argv[i] in no_setup_requires_arguments:
             # Simple case: An argument which is either an option or a command
             # which doesn't need setup requirements.
+
             return True
         elif (is_short_option(argv[i]) and
               all(option in no_setup_requires_arguments
                   for option in expand_short_options(argv[i]))):
             # Not so simple case: Combined short options none of which need
             # setup requirements.
+
             return True
         elif argv[i - 1:i] == ['--egg-base']:
             # Tricky case: --egg-info takes an argument which should not make
             # us use setup_requires (defeating the purpose of this code).
+
             return True
         else:
             return False
 
     if all(argument_without_setup_requirements(argv, i)
            for i in range(1, len(argv))):
+
         return {
             "cmdclass": {
                 "build": DummyBuild,
